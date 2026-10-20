@@ -1,0 +1,35 @@
+server:
+  port: ${PORT:8080}
+  error:
+    include-stacktrace: never
+    include-message: never
+
+spring:
+  application:
+    name: tech-diary-backend
+  servlet:
+    multipart:
+      max-file-size: 20MB
+      max-request-size: 25MB
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+    deserialization:
+      fail-on-unknown-properties: false
+  web:
+    cors:
+      allowed-origins: "${CORS_ALLOWED_ORIGINS:http://localhost:5173,http://localhost:3000,http://127.0.0.1:5173}"
+
+# Tech Diary custom config
+techdiary:
+  security:
+    admin-key: "${DEVVAULT_ADMIN_KEY:}"
+  data:
+    directory: "${DATA_DIRECTORY:${user.home}/tech-diary-data}"
+  backup:
+    directory: "${BACKUP_DIRECTORY:${user.home}/tech-diary-data/backups}"
+
+logging:
+  level:
+    com.techdiary: DEBUG
+    root: INFO

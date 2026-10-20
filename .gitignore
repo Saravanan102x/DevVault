@@ -1,0 +1,44 @@
+# Compiled and Build Output
+backend/target/
+frontend/dist/
+frontend/dist-ssr/
+*.class
+
+# Dependencies
+frontend/node_modules/
+.pnp
+.pnp.js
+
+# Local Data Directories (Preserve User Data - Never Commit)
+tech-diary-data/
+backend/tech-diary-data/
+*.tmp
+*.restore.tmp
+
+# Environment Variables & Secrets
+.env
+.env.local
+.env.*.local
+*.env
+!*.env.example
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDE & OS Files
+.idea/
+.vscode/*
+!.vscode/extensions.json
+*.iml
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+.DS_Store
+Thumbs.db

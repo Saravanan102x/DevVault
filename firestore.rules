@@ -1,0 +1,44 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // =========================================================================
+    // DevVault Hybrid Security Rules: Public Read-Only / Owner-Only Writes
+    // =========================================================================
+    // Principles:
+    // 1. Default Deny: Everything outside /users is blocked.
+    // 2. Public Read Access: Anyone with your link can view notes, problems,
+    //    companies, questions, and journal in Read-Only mode without an account.
+    // 3. Strict Owner-Only Writes: ONLY the authenticated vault owner whose UID
+    //    matches {userId} can create, update, or delete any record.
+    // 4. Zero Data Tampering: No guest, visitor, or unauthenticated user can
+    //    write, overwrite, or delete any private DevVault data.
+    // =========================================================================
+
+    // 1. Root-level deny-all fallback (Deny by default)
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // 2. User vault with public read access and owner-only write permissions
+    match /users/{userId} {
+      // Helper to verify request is authenticated and caller is the document owner
+      function isOwner() {
+        return request.auth != null && request.auth.uid == userId;
+      }
+
+      // Public read-only; owner-only write
+      allow read: if true;
+      allow write: if isOwner();
+
+      // All subcollections inherit public read and owner-only write
+      // (notes, problems, companies, folders, interviewQuestions, tags,
+      //  revisions, journal, checklists, diagrams, projects, dailyTechTopics, stats)
+      match /{allSubcollections=**} {
+        allow read: if true;
+        allow write: if isOwner();
+      }
+    }
+  }
+}

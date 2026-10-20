@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400&display=swap" rel="stylesheet" />
+    <meta name="description" content="DevVault — Premium developer workspace for Java, DSA, system architecture, and company interview readiness." />
+    <title>DevVault</title>
+    <script>
+      (function() {
+        try {
+          var saved = localStorage.getItem('devvault_v3_theme');
+          var isDark = saved === 'dark';
+          if (isDark) {
+            document.documentElement.classList.add('dark');
+            document.documentElement.setAttribute('data-theme', 'dark');
+            document.documentElement.style.colorScheme = 'dark';
+          } else {
+            document.documentElement.classList.remove('dark');
+            document.documentElement.setAttribute('data-theme', 'light');
+            document.documentElement.style.colorScheme = 'light';
+          }
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root">
+      <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100vh;background:#0e1017;color:#f1f2f6;font-family:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;text-align:center;padding:20px;">
+        <img src="/favicon.svg" alt="DevVault" style="width:56px;height:56px;object-fit:contain;margin-bottom:14px;filter:drop-shadow(0 4px 16px rgba(134,59,255,0.4));" />
+        <h1 style="font-size:24px;font-weight:700;letter-spacing:-0.03em;margin:0;color:#f1f2f6;">DevVault</h1>
+        <p style="font-size:13px;color:#8f93a9;margin:4px 0 16px;font-weight:500;">Your Developer Knowledge Vault</p>
+        <div style="width:160px;height:4px;background:#1e202e;border-radius:999px;overflow:hidden;position:relative;">
+          <div style="width:45%;height:100%;background:linear-gradient(90deg,#863bff,#a29bfe);border-radius:999px;position:absolute;animation:devvault-bar 1.3s cubic-bezier(0.4, 0, 0.2, 1) infinite alternate;"></div>
+        </div>
+      </div>
+      <style>
+        @keyframes devvault-bar {
+          0% { left: -40%; }
+          100% { left: 95%; }
+        }
+      </style>
+    </div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>
