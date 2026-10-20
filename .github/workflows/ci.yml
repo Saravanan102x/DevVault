@@ -46,9 +46,6 @@ jobs:
   backend:
     name: Backend Test Suite
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: backend
 
     steps:
       - name: Checkout Repository
@@ -59,10 +56,6 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
-          cache: 'maven'
-
-      - name: Make Maven Wrapper Executable
-        run: chmod +x mvnw
 
       - name: Run Backend Maven Unit Tests
-        run: ./mvnw test -B
+        run: mvn -B test -f backend/pom.xml
