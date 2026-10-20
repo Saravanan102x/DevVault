@@ -12,6 +12,7 @@ import { SettingsPage } from './pages/SettingsPage'
 import { ProjectsPage } from './pages/ProjectsPage'
 import { DiagramsPage } from './pages/DiagramsPage'
 import { ChecklistPage } from './pages/ChecklistPage'
+import { SystemDesignPage } from './pages/SystemDesignPage'
 
 import { ThemeProvider } from './context/ThemeContext'
 import { AccessProvider } from './context/AccessContext'
@@ -40,6 +41,7 @@ export default function App() {
                 <Route path="/diagrams" element={<DiagramsPage />} />
                 <Route path="/notes" element={<NotesPage />} />
                 <Route path="/problems" element={<ProblemsPage />} />
+                <Route path="/system-design" element={<SystemDesignPage />} />
                 <Route path="/companies" element={<CompaniesPage />} />
                 <Route path="/revision" element={<RevisionPage />} />
                 <Route path="/journal" element={<JournalPage />} />

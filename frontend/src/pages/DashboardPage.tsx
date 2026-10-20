@@ -9,6 +9,7 @@ import {
   CalendarCheck,
   CheckSquare,
   Clock,
+  Network,
 } from 'lucide-react'
 import { dashboardApi, notesApi, companiesApi } from '../services/api'
 import { Badge } from '../components/common/Badge'
@@ -150,6 +151,14 @@ export const DashboardPage: React.FC = () => {
               >
                 <Plus className="w-3.5 h-3.5" />
                 <span>Coding Problem</span>
+              </button>
+              <button
+                onClick={() => navigate('/system-design')}
+                className="btn-secondary text-xs px-3 py-1.5 cursor-pointer shadow-2xs font-bold hover:border-purple-500"
+                title="Open System Design Vault"
+              >
+                <Network className="w-3.5 h-3.5 text-purple-500" />
+                <span>System Design</span>
               </button>
               <button
                 onClick={() => navigate('/checklist')}

@@ -18,9 +18,10 @@ import {
   Sun,
   Moon,
   Plus,
+  Network,
 } from 'lucide-react'
-import { searchApi } from '../../services/api'
-import type { SearchResult, Note, Problem, InterviewQuestion } from '../../types'
+import { searchApi, systemDesignApi } from '../../services/api'
+import type { SearchResult, Note, Problem, InterviewQuestion, SystemDesignQuestion } from '../../types'
 import { Badge } from '../common/Badge'
 import { useTheme } from '../../context/ThemeContext'
 
@@ -43,11 +44,11 @@ interface FlatResultItem {
   id: string
   title: string
   snippet: string
-  type: 'NOTE' | 'PROBLEM' | 'INTERVIEW_QUESTION'
+  type: 'NOTE' | 'PROBLEM' | 'INTERVIEW_QUESTION' | 'SYSTEM_DESIGN'
   tags: string[]
 }
 
-type SearchCategory = 'ALL' | 'NOTE' | 'PROBLEM' | 'INTERVIEW_QUESTION' | 'ACTION'
+type SearchCategory = 'ALL' | 'NOTE' | 'PROBLEM' | 'SYSTEM_DESIGN' | 'INTERVIEW_QUESTION' | 'ACTION'
 
 export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, onClose }) => {
   const [query, setQuery] = useState('')
@@ -132,6 +133,14 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
       icon: Code2,
       category: 'Navigation',
       perform: () => navigate('/problems'),
+    },
+    {
+      id: 'cmd-nav-system-design',
+      title: 'Open System Design Vault',
+      subtitle: 'High-level architecture, reference links, and design write-ups',
+      icon: Network,
+      category: 'Navigation',
+      perform: () => navigate('/system-design'),
     },
     {
       id: 'cmd-nav-companies',
@@ -246,6 +255,21 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
           })
         })
 
+        try {
+          const sdList = await systemDesignApi.list({ q: trimmed })
+          sdList?.forEach((sd: SystemDesignQuestion) => {
+            flat.push({
+              id: sd.id,
+              title: sd.title,
+              snippet: sd.problemStatement || sd.highLevelArchitecture || '',
+              type: 'SYSTEM_DESIGN',
+              tags: sd.tags || [],
+            })
+          })
+        } catch {
+          // ignore
+        }
+
         setResults(flat)
       } catch (err) {
         setResults([])
@@ -304,6 +328,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
     onClose()
     if (item.type === 'NOTE') navigate(`/notes`)
     else if (item.type === 'PROBLEM') navigate(`/problems`)
+    else if (item.type === 'SYSTEM_DESIGN') navigate(`/system-design`)
     else if (item.type === 'INTERVIEW_QUESTION') navigate(`/companies`)
   }
 
@@ -313,6 +338,8 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
         return <FileText className="w-4 h-4 text-[#6C5CE7] dark:text-[#8C7CFF]" />
       case 'PROBLEM':
         return <Code2 className="w-4 h-4 text-[#6C5CE7] dark:text-[#8C7CFF]" />
+      case 'SYSTEM_DESIGN':
+        return <Network className="w-4 h-4 text-purple-500 dark:text-purple-400" />
       case 'INTERVIEW_QUESTION':
         return <HelpCircle className="w-4 h-4 text-[#777B8A] dark:text-[#9497A8]" />
       default:
@@ -359,9 +386,15 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
               <X className="w-3.5 h-3.5" />
             </button>
           )}
-          <kbd className="hidden sm:inline-block px-1.5 py-0.5 text-[10px] font-mono text-[#777B8A] dark:text-[#9497A8] bg-[#F0EDFF] dark:bg-[#1E202E] rounded border border-[#E9EAF0] dark:border-[#262838]">
-            ESC
-          </kbd>
+          <button
+            type="button"
+            onClick={onClose}
+            className="p-1.5 rounded-lg text-[#777B8A] hover:text-[#20212A] dark:hover:text-[#F1F2F6] hover:bg-[#F0EDFF] dark:hover:bg-[#1E202E] transition-colors cursor-pointer shrink-0 ml-1"
+            title="Close search"
+            aria-label="Close search"
+          >
+            <X className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Quick Category Filter Tabs */}
@@ -371,6 +404,7 @@ export const GlobalSearchModal: React.FC<GlobalSearchModalProps> = ({ isOpen, on
               { id: 'ALL', label: 'All' },
               { id: 'NOTE', label: 'Notes' },
               { id: 'PROBLEM', label: 'DSA' },
+              { id: 'SYSTEM_DESIGN', label: 'System Design' },
               { id: 'INTERVIEW_QUESTION', label: 'Interview Qs' },
               { id: 'ACTION', label: 'Commands' },
             ] as const

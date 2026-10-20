@@ -16,7 +16,8 @@ import { diagramsStorage } from '../diagramsStorage'
 import type {
   Note, Problem, Solution, Company, CompanyFolder,
   InterviewQuestion, Tag, RevisionRecord, JournalEntry,
-  DashboardStats, SearchResult, ChecklistItem, DailyTechTopicLog
+  DashboardStats, SearchResult, ChecklistItem, DailyTechTopicLog,
+  SystemDesignQuestion
 } from '../../types'
 
 const OWNER_UID = (import.meta.env.VITE_DEVVAULT_OWNER_UID || 'I6t3RBPifeP6wNh1fOGdkRgangB2').trim()
@@ -830,3 +831,208 @@ export const fbBackupApi = {
     return `Restore completed successfully! ${restoredCount} items imported into your private vault.`
   },
 }
+
+// ─── System Design Questions & Reference Links ──────────────────────────────
+export const DEFAULT_SYSTEM_DESIGN_QUESTIONS: SystemDesignQuestion[] = [
+  {
+    id: 'sd_url_shortener',
+    title: 'Design a URL Shortener (TinyURL / Bitly)',
+    category: 'HLD',
+    difficulty: 'MEDIUM',
+    status: 'SOLVED',
+    problemStatement: 'Design a globally scalable URL shortening service like TinyURL or Bitly that converts long URLs into 7-character aliases and handles high-frequency 301/302 redirects.',
+    requirementsFunctional: `- Given a long URL, generate a unique, short alias (e.g. https://dev.vault/abc12XY).\n- When users visit the short URL, redirect them seamlessly to the original destination.\n- Optional custom alias selection.\n- Optional link expiration after a specified TTL.`,
+    requirementsNonFunctional: `- High availability (99.999% uptime) - redirection must never fail.\n- Low latency redirection (< 15ms target p99).\n- Read-heavy workload (100:1 read-to-write ratio).\n- Non-guessable URLs to prevent scraping.`,
+    capacityEstimation: `- 500M new URLs per month (~200 writes/sec).\n- Read traffic at 100:1: ~20,000 redirects/sec (peak 40,000/sec).\n- Storage: 500M * 500 bytes * 12 months * 5 years ≈ 15 TB.\n- Cache: 20% of daily URLs generate 80% of traffic (Pareto 80/20 rule) -> ~170 GB memory cache.`,
+    highLevelArchitecture: `1. Clients -> Global Anycast DNS / CDN (Cloudflare Edge Caching)\n2. Load Balancer (Nginx / Envoy) with TLS Termination\n3. Application Gateway (Stateless Spring Boot / Go microservices)\n4. Distributed Cache (Redis Cluster with LRU eviction)\n5. Key Generation Service (KGS) or Base62 Snowflake Counter\n6. Primary Database (ScyllaDB / Cassandra / DynamoDB for horizontal write partitioning)`,
+    notesAndDeepDive: `### Core Encoding Technique: Base62 vs Hashing\n- Base62 uses [a-z, A-Z, 0-9] (62 chars). 62^7 = ~3.52 Trillion unique URLs, well exceeding 5-year needs.\n- MD5 / SHA-256 produces hash collisions requiring DB lookup loops. Instead, use a centralized **Token Bucket / Range Coordinator (ZooKeeper)** where workers lease 1,000,000 ID ranges and perform local \`base62(id)\` encoding with zero database roundtrips.\n\n### 301 Permanent vs 302 Temporary Redirect\n- **301 Permanent Redirect**: Browser caches redirect locally. Reduces server load to near zero for repeat hits, but owner loses click analytics.\n- **302 Temporary Redirect**: Every request hits the backend load balancer. Better for real-time click telemetry and analytics tracking.`,
+    bottlenecksAndTradeoffs: `1. **Cache Stampede / Thundering Herd**: When popular links expire in Redis, thousands of concurrent requests hit the DB. Mitigate with probabilistic early expiration (XFetch) or mutex locks.\n2. **Database Choice**: Relational SQL struggles to scale past 100k writes/sec without heavy manual sharding. Wide-column NoSQL (Cassandra/DynamoDB) partition key on \`hash_key\` gives O(1) single-row lookups.`,
+    referenceLinks: [
+      {
+        id: 'ref_1',
+        title: 'System Design Primer — Design TinyURL',
+        url: 'https://github.com/donnemartin/system-design-primer/blob/master/solutions/system_design/pastebin/README.md',
+        type: 'GITHUB',
+      },
+      {
+        id: 'ref_2',
+        title: 'High Scalability — URL Shortener Architecture Deep Dive',
+        url: 'http://highscalability.com/',
+        type: 'ARTICLE',
+      },
+    ],
+    diagramUrl: '',
+    tags: ['System Design', 'HLD', 'Base62', 'Redis', 'Cassandra', 'Caching'],
+    companyIds: ['Google', 'Meta', 'Amazon', 'Microsoft'],
+    starred: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'sd_distributed_rate_limiter',
+    title: 'Design a Distributed Rate Limiter',
+    category: 'HLD',
+    difficulty: 'MEDIUM',
+    status: 'SOLVED',
+    problemStatement: 'Design a high-throughput, low-latency distributed rate limiter to defend microservices and APIs against brute force, DDoS, and noisy neighbor resource monopolization.',
+    requirementsFunctional: `- Limit requests based on client IP, authenticated user ID, or API token (e.g., 100 requests per minute).\n- Return HTTP 429 Too Many Requests with Retry-After header when limit is exceeded.\n- Support tier-based limits (Free, Pro, Enterprise).`,
+    requirementsNonFunctional: `- Ultra-low latency (< 2-4ms overhead per API request).\n- Distributed accuracy across multiple multi-region application instances.\n- Fault tolerance: If rate limiter fails, decide fail-open vs fail-closed.`,
+    capacityEstimation: `- 1,000,000 active concurrent users.\n- 50,000 requests/sec across all edge gateways.\n- Memory per user in Redis: ~20-50 bytes -> 50 MB total memory required.`,
+    highLevelArchitecture: `1. API Gateway (Kong / Envoy / Spring Cloud Gateway)\n2. Rate Limiter Filter executing atomic Redis Lua scripts\n3. In-memory local cache (Caffeine / L1 memory) for frequent abusers with short TTL\n4. Rules Engine loaded from PostgreSQL with pub/sub invalidation`,
+    notesAndDeepDive: `### Algorithms Comparison\n1. **Token Bucket**: Refills tokens at fixed rate. Allows bursts up to bucket size. Highly memory efficient.\n2. **Leaky Bucket**: Processes at constant rate with FIFO queue. Smooths out traffic spikes.\n3. **Sliding Window Counter**: Hybrid combining Fixed Window Counter and Sliding Log. Memory footprint is tiny while eliminating edge-boundary double-rate burst vulnerabilities.\n\n### Atomicity with Redis Lua Scripting\nRace conditions occur if multiple gateway nodes do \`GET\` then \`INCR\`. Executing as an atomic **Redis Lua script** guarantees single-threaded atomicity with zero client-side distributed locking overhead.`,
+    bottlenecksAndTradeoffs: `1. **Multi-Region Latency**: Centralized Redis in us-east adds 80ms latency to eu-central requests. Use local Redis instances with asynchronous synchronizer or local token bucket with batch reconciliation.\n2. **Fail-Open vs Fail-Closed**: For critical billing APIs, fail-closed. For standard user content, fail-open to avoid taking down service during Redis blips.`,
+    referenceLinks: [
+      {
+        id: 'ref_rl_1',
+        title: 'Stripe Engineering — Scaling API with Rate Limiters',
+        url: 'https://stripe.com/blog/rate-limiters',
+        type: 'OFFICIAL_DOC',
+      },
+      {
+        id: 'ref_rl_2',
+        title: 'Cloudflare — How We Built Rate Limiting to Protect Millions',
+        url: 'https://blog.cloudflare.com/counting-things-a-lot-of-different-things/',
+        type: 'ARTICLE',
+      },
+    ],
+    diagramUrl: '',
+    tags: ['Distributed Systems', 'Rate Limiting', 'Redis', 'Lua', 'Security', 'Resilience'],
+    companyIds: ['Stripe', 'Uber', 'Cloudflare', 'PayPal'],
+    starred: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    id: 'sd_distributed_cache',
+    title: 'Design a Distributed Cache (Redis / Memcached Architecture)',
+    category: 'DISTRIBUTED_SYSTEMS',
+    difficulty: 'HARD',
+    status: 'ATTEMPTED',
+    problemStatement: 'Design a scalable, highly available in-memory distributed key-value caching system supporting fast GET/PUT operations, LRU eviction, and automatic data partitioning.',
+    requirementsFunctional: `- put(key, value, ttl)\n- get(key) -> value or null\n- Support eviction policies: LRU, LFU, FIFO\n- Support persistence / snapshotting (optional RDB / AOF)`,
+    requirementsNonFunctional: `- Sub-millisecond latency (< 1ms read/write).\n- High availability with leader-follower replication.\n- Linear horizontal scalability when nodes are added or removed.`,
+    capacityEstimation: `- 30 TB total active cache dataset.\n- 500,000 requests/sec peak.\n- Cluster of 30 nodes with 1 TB RAM each, replicated 3x across availability zones.`,
+    highLevelArchitecture: `1. Client Driver / Smart Cache Proxy (Router)\n2. Consistent Hash Ring with Virtual Nodes (100-256 virtual nodes per physical host)\n3. Cache Node: In-Memory Hash Table + Doubly-Linked List for O(1) LRU eviction\n4. Gossip Protocol for cluster membership and heartbeat detection\n5. Master-Replica async replication for failover`,
+    notesAndDeepDive: `### Consistent Hashing with Virtual Nodes\n- Standard \`hash(key) % N\` invalidates almost 100% of keys when N changes.\n- **Consistent Hashing** places nodes on a 0 to 2^32-1 ring. When a node leaves or joins, only k/N keys need rebalancing.\n- Adding **virtual nodes (tokens)** prevents non-uniform hot-spotting on the ring.\n\n### Eviction Mechanics\n- \`HashMap<Key, Node>\` + \`DoublyLinkedList\`: \`get(key)\` moves node to head; \`put(key, val)\` inserts at head; on capacity limit, evict tail in O(1) time complexity.`,
+    bottlenecksAndTradeoffs: `1. **Cache Invalidation**: "There are only two hard things in Computer Science: cache invalidation and naming things." Write-Through vs Write-Back vs Cache-Aside.\n2. **Hot Key Issue**: A celebrity post hits a single cache node. Mitigate with local in-memory L1 cache on client nodes or read replication across replica nodes.`,
+    referenceLinks: [
+      {
+        id: 'ref_dc_1',
+        title: 'Amazon Dynamo Paper — Highly Available Key-Value Store',
+        url: 'https://www.allthingsdistributed.com/files/amazon-dynamo-sosp2007.pdf',
+        type: 'PAPER',
+      },
+      {
+        id: 'ref_dc_2',
+        title: 'Redis Cluster Specification & Gossip Protocol',
+        url: 'https://redis.io/docs/latest/operate/oss_and_stack/reference/cluster-spec/',
+        type: 'OFFICIAL_DOC',
+      },
+    ],
+    diagramUrl: '',
+    tags: ['Consistent Hashing', 'LRU Cache', 'Distributed Systems', 'Gossip Protocol', 'In-Memory'],
+    companyIds: ['Amazon', 'Google', 'Netflix', 'Meta'],
+    starred: false,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+]
+
+export const fbSystemDesignApi = {
+  list: async (params?: { category?: string; q?: string; difficulty?: string; starred?: boolean }): Promise<SystemDesignQuestion[]> => {
+    let list: SystemDesignQuestion[] = []
+    try {
+      const colRef = userCol('systemDesign')
+      const snap = await getDocs(colRef)
+      list = snap.docs.map(d => ({ ...d.data(), id: d.id } as SystemDesignQuestion))
+    } catch {
+      // Fallback if offline
+    }
+
+    // If no custom items in firestore, seed with curated questions
+    if (list.length === 0) {
+      list = DEFAULT_SYSTEM_DESIGN_QUESTIONS
+    }
+
+    if (params?.category && params.category !== 'ALL') {
+      list = list.filter(q => q.category === params.category)
+    }
+    if (params?.difficulty && params.difficulty !== 'ALL') {
+      list = list.filter(q => q.difficulty === params.difficulty)
+    }
+    if (params?.starred !== undefined) {
+      list = list.filter(q => q.starred === params.starred)
+    }
+    if (params?.q) {
+      const qNorm = params.q.toLowerCase().trim()
+      list = list.filter(q =>
+        q.title?.toLowerCase().includes(qNorm) ||
+        q.problemStatement?.toLowerCase().includes(qNorm) ||
+        q.tags?.some(t => t.toLowerCase().includes(qNorm)) ||
+        q.referenceLinks?.some(r => r.title?.toLowerCase().includes(qNorm) || r.url?.toLowerCase().includes(qNorm))
+      )
+    }
+    return list.sort((a, b) => (b.starred ? 1 : 0) - (a.starred ? 1 : 0))
+  },
+  get: async (id: string): Promise<SystemDesignQuestion | null> => {
+    try {
+      const ref = userDoc('systemDesign', id)
+      const snap = await getDoc(ref)
+      if (snap.exists()) {
+        return { ...snap.data(), id: snap.id } as SystemDesignQuestion
+      }
+    } catch {
+      // Fallback
+    }
+    const found = DEFAULT_SYSTEM_DESIGN_QUESTIONS.find(q => q.id === id)
+    return found || null
+  },
+  create: async (data: Partial<SystemDesignQuestion>): Promise<SystemDesignQuestion> => {
+    assertOwner()
+    const id = data.id || `sd_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`
+    const now = new Date().toISOString()
+    const question: SystemDesignQuestion = {
+      id,
+      title: data.title || 'Untitled System Design',
+      category: data.category || 'HLD',
+      difficulty: data.difficulty || 'MEDIUM',
+      status: data.status || 'ATTEMPTED',
+      problemStatement: data.problemStatement || '',
+      requirementsFunctional: data.requirementsFunctional || '',
+      requirementsNonFunctional: data.requirementsNonFunctional || '',
+      capacityEstimation: data.capacityEstimation || '',
+      highLevelArchitecture: data.highLevelArchitecture || '',
+      notesAndDeepDive: data.notesAndDeepDive || '',
+      bottlenecksAndTradeoffs: data.bottlenecksAndTradeoffs || '',
+      referenceLinks: data.referenceLinks || [],
+      diagramUrl: data.diagramUrl || '',
+      tags: data.tags || [],
+      companyIds: data.companyIds || [],
+      starred: Boolean(data.starred),
+      createdAt: now,
+      updatedAt: now,
+    }
+    const ref = userDoc('systemDesign', id)
+    await setDoc(ref, question)
+    return question
+  },
+  update: async (id: string, updates: Partial<SystemDesignQuestion>): Promise<SystemDesignQuestion> => {
+    assertOwner()
+    const ref = userDoc('systemDesign', id)
+    const existing = await fbSystemDesignApi.get(id)
+    const updated: SystemDesignQuestion = {
+      ...(existing || {}),
+      ...updates,
+      id,
+      updatedAt: new Date().toISOString(),
+    } as SystemDesignQuestion
+    await setDoc(ref, updated, { merge: true })
+    return updated
+  },
+  delete: async (id: string): Promise<void> => {
+    assertOwner()
+    const ref = userDoc('systemDesign', id)
+    await deleteDoc(ref)
+  },
+}
+

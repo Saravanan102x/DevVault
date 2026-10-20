@@ -16,6 +16,7 @@ import {
   fbSearchApi,
   fbDashboardApi,
   fbBackupApi,
+  fbSystemDesignApi,
 } from './firebase/firestoreService'
 
 const api = axios.create({
@@ -268,6 +269,20 @@ export const searchApi = {
     shouldUseFirestore()
       ? fbSearchApi.search(q, types)
       : api.get<SearchResult>('/search', { params: { q, types } }).then(r => r.data),
+}
+
+// ─── System Design ───────────────────────────────────────────────────────────
+export const systemDesignApi = {
+  list: (params?: { category?: string; q?: string; difficulty?: string; starred?: boolean }) =>
+    fbSystemDesignApi.list(params),
+  get: (id: string) =>
+    fbSystemDesignApi.get(id),
+  create: (data: any) =>
+    fbSystemDesignApi.create(data),
+  update: (id: string, updates: any) =>
+    fbSystemDesignApi.update(id, updates),
+  delete: (id: string) =>
+    fbSystemDesignApi.delete(id),
 }
 
 // ─── Dashboard & Backup ───────────────────────────────────────────────────────

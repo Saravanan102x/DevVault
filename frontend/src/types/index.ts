@@ -246,3 +246,34 @@ export interface DailyTechTopicLog {
   createdAt: string
 }
 
+export type SystemDesignCategory = 'HLD' | 'LLD' | 'DISTRIBUTED_SYSTEMS' | 'ARCHITECTURE'
+
+export interface SystemDesignReference {
+  id?: string
+  title: string
+  url: string
+  type?: 'ARTICLE' | 'VIDEO' | 'GITHUB' | 'PAPER' | 'OFFICIAL_DOC'
+}
+
+export interface SystemDesignQuestion {
+  id: string
+  title: string
+  category: SystemDesignCategory
+  difficulty: Difficulty
+  status: ProblemStatus
+  problemStatement?: string
+  requirementsFunctional?: string
+  requirementsNonFunctional?: string
+  capacityEstimation?: string
+  highLevelArchitecture?: string
+  notesAndDeepDive?: string
+  bottlenecksAndTradeoffs?: string
+  referenceLinks: SystemDesignReference[]
+  diagramUrl?: string
+  tags: string[]
+  companyIds: string[]
+  starred: boolean
+  createdAt: string
+  updatedAt: string
+}
+

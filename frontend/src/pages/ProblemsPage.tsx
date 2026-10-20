@@ -21,6 +21,7 @@ import {
   X,
   RotateCcw,
   Loader2,
+  ArrowLeft,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { problemsApi, revisionsApi } from '../services/api'
@@ -50,6 +51,7 @@ export const ProblemsPage: React.FC = () => {
   const [activeProblem, setActiveProblem] = useState<Problem | null>(null)
   const [activeSolutionIdx, setActiveSolutionIdx] = useState(0)
   const [viewMode, setViewMode] = useState<'workspace' | 'table'>('workspace')
+  const [mobileDetailOpen, setMobileDetailOpen] = useState(false)
   const [copiedCode, setCopiedCode] = useState(false)
 
   // Modals
@@ -508,7 +510,7 @@ export const ProblemsPage: React.FC = () => {
       {viewMode === 'workspace' && (
         <div className="flex flex-col lg:flex-row gap-5 items-start">
           {/* Left Problem Browser List */}
-          <div className="w-full lg:w-76 shrink-0 dev-card p-3 space-y-1.5 h-[calc(100vh-12rem)] flex flex-col">
+          <div className={`${mobileDetailOpen ? 'hidden lg:flex' : 'flex'} w-full lg:w-76 shrink-0 dev-card p-3 space-y-1.5 h-[calc(100vh-14rem)] flex-col`}>
             <div className="text-[11px] font-mono uppercase text-[#777B8A] dark:text-[#9497A8] px-1 pb-1 border-b border-[#E9EAF0] dark:border-[#262838] flex items-center justify-between">
               <span>Problem Catalog</span>
               <span className="text-[10px] text-[#777B8A] dark:text-[#9497A8]">{problems?.length || 0}</span>
@@ -529,6 +531,7 @@ export const ProblemsPage: React.FC = () => {
                       onClick={() => {
                         setActiveProblem(p)
                         setActiveSolutionIdx(0)
+                        setMobileDetailOpen(true)
                       }}
                       className={`group p-2.5 rounded border transition-colors cursor-pointer text-xs ${
                         isSelected
@@ -573,7 +576,18 @@ export const ProblemsPage: React.FC = () => {
           </div>
 
           {/* Right Problem Detail & Coding Workspace */}
-          <div className="flex-1 dev-card p-5 sm:p-6 min-h-[calc(100vh-12rem)] flex flex-col w-full">
+          <div className={`${!mobileDetailOpen ? 'hidden lg:flex' : 'flex'} flex-1 dev-card p-4 sm:p-6 min-h-[calc(100vh-14rem)] flex-col w-full`}>
+            {/* Mobile Back Button */}
+            <div className="lg:hidden pb-3 border-b border-[#E9EAF0] dark:border-[#262838]">
+              <button
+                type="button"
+                onClick={() => setMobileDetailOpen(false)}
+                className="flex items-center gap-1.5 text-xs font-bold text-[#6C5CE7] dark:text-[#8C7CFF] hover:underline cursor-pointer"
+              >
+                <ArrowLeft className="w-4 h-4" />
+                <span>Back to Problem List</span>
+              </button>
+            </div>
             {activeProblem ? (
               <div className="space-y-5">
                 {/* Header & Meta */}

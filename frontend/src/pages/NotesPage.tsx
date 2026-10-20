@@ -27,6 +27,7 @@ import {
   Video,
   FolderPlus,
   Sparkles,
+  ArrowLeft,
 } from 'lucide-react'
 import toast from 'react-hot-toast'
 import { notesApi } from '../services/api'
@@ -77,6 +78,7 @@ export const NotesPage: React.FC = () => {
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [isEditing, setIsEditing] = useState(false)
+  const [mobileNoteDetailOpen, setMobileNoteDetailOpen] = useState(false)
   const [formTitle, setFormTitle] = useState('')
   const [formFolder, setFormFolder] = useState('Core Java')
   const [isCreatingFolderInModal, setIsCreatingFolderInModal] = useState(false)
@@ -184,6 +186,7 @@ export const NotesPage: React.FC = () => {
       queryClient.invalidateQueries({ queryKey: ['dashboard-stats'] })
       toast.success('Note saved successfully!')
       setActiveNote(newNote)
+      setMobileNoteDetailOpen(true)
       setIsModalOpen(false)
     },
   })
@@ -727,7 +730,7 @@ export const NotesPage: React.FC = () => {
 
         {/* Center: Note Cards List with Drag Support */}
         {!isDistractionFree && (
-          <div className="w-76 shrink-0 dev-card p-3 flex flex-col space-y-2 h-[calc(100vh-12rem)]">
+          <div className={`${mobileNoteDetailOpen ? 'hidden md:flex' : 'flex'} w-full md:w-76 shrink-0 dev-card p-3 flex-col space-y-2 h-[calc(100vh-14rem)]`}>
             {/* Search & Sort */}
             <div className="space-y-1.5 pb-2 border-b border-[#E9EAF0] dark:border-[#262838]">
               <div className="relative">
@@ -781,7 +784,10 @@ export const NotesPage: React.FC = () => {
                         setDraggingNoteId(note.id)
                       }}
                       onDragEnd={() => setDraggingNoteId(null)}
-                      onClick={() => setActiveNote(note)}
+                      onClick={() => {
+                        setActiveNote(note)
+                        setMobileNoteDetailOpen(true)
+                      }}
                       className={`group p-3 rounded-xl border transition-all ${isAdmin ? 'cursor-grab active:cursor-grabbing' : 'cursor-pointer'} text-xs ${
                         isDragging ? 'opacity-40 scale-95 border-dashed border-[#6C5CE7]' : ''
                       } ${
@@ -851,7 +857,18 @@ export const NotesPage: React.FC = () => {
         )}
 
         {/* Right Pane: Editorial Document Reader */}
-        <div className="flex-1 dev-card p-6 sm:p-8 min-h-[calc(100vh-12rem)] flex flex-col shadow-sm">
+        <div className={`${!mobileNoteDetailOpen ? 'hidden md:flex' : 'flex'} flex-1 dev-card p-4 sm:p-6 md:p-8 min-h-[calc(100vh-14rem)] flex-col shadow-sm w-full min-w-0`}>
+          {/* Mobile Back Button */}
+          <div className="md:hidden pb-3 border-b border-[#E9EAF0] dark:border-[#262838]">
+            <button
+              type="button"
+              onClick={() => setMobileNoteDetailOpen(false)}
+              className="flex items-center gap-1.5 text-xs font-bold text-[#6C5CE7] dark:text-[#8C7CFF] hover:underline cursor-pointer"
+            >
+              <ArrowLeft className="w-4 h-4" />
+              <span>Back to Notes List</span>
+            </button>
+          </div>
           {activeNote ? (
             <div className="max-w-3xl mx-auto w-full space-y-6">
               {/* Document Header & Metadata */}

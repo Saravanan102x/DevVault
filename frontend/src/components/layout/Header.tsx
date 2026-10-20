@@ -14,6 +14,7 @@ import {
   LogOut,
   X,
   Flame,
+  Menu,
 } from 'lucide-react'
 import { useTheme } from '../../context/ThemeContext'
 import { useAccess } from '../../context/AccessContext'
@@ -22,6 +23,7 @@ interface HeaderProps {
   title: string
   subtitle?: string
   onOpenSearch: () => void
+  onToggleMobileSidebar?: () => void
   dueCount?: number
   streakCount?: number
 }
@@ -30,6 +32,7 @@ export const Header: React.FC<HeaderProps> = ({
   title,
   subtitle,
   onOpenSearch,
+  onToggleMobileSidebar,
   dueCount = 0,
 }) => {
   const { theme, toggleTheme } = useTheme()
@@ -82,15 +85,26 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <>
-      <header className="dev-header h-13 px-4 sm:px-7 border-b border-[#E9EAF0] dark:border-[#262838] bg-white/95 dark:bg-[#14151F]/95 flex items-center justify-between shrink-0 sticky top-0 z-20">
+      <header className="dev-header h-13 px-3 sm:px-7 border-b border-[#E9EAF0] dark:border-[#262838] bg-white/95 dark:bg-[#14151F]/95 flex items-center justify-between shrink-0 sticky top-0 z-20">
         {/* Title & Section Context */}
-        <div className="flex items-center gap-2 min-w-0 pr-4">
+        <div className="flex items-center gap-1.5 sm:gap-2 min-w-0 pr-2 sm:pr-4">
+          {onToggleMobileSidebar && (
+            <button
+              type="button"
+              onClick={onToggleMobileSidebar}
+              className="lg:hidden p-1.5 -ml-1 rounded-lg text-[#777B8A] hover:text-[#20212A] dark:hover:text-[#F1F2F6] hover:bg-[#F5F6FA] dark:hover:bg-[#1E202E] transition-colors cursor-pointer shrink-0"
+              aria-label="Toggle navigation drawer"
+              title="Open Navigation"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          )}
           <Link
             to="/"
-            className="flex items-center gap-1.5 text-xs text-[#777B8A] dark:text-[#9497A8] hover:text-[#20212A] dark:hover:text-[#F1F2F6] font-medium transition-colors"
+            className="flex items-center gap-1.5 text-xs text-[#777B8A] dark:text-[#9497A8] hover:text-[#20212A] dark:hover:text-[#F1F2F6] font-medium transition-colors shrink-0"
           >
             <img src="/favicon.svg" alt="DevVault" className="w-3.5 h-3.5 object-contain" />
-            <span>DevVault</span>
+            <span className="hidden sm:inline">DevVault</span>
           </Link>
           <ChevronRight className="w-3 h-3 text-[#B0B4C3] dark:text-[#5E6278] shrink-0" />
           <span className="text-xs font-semibold text-[#20212A] dark:text-[#F1F2F6] truncate">
@@ -104,7 +118,7 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Header Actions */}
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
           {/* Share Read-Only Link Button */}
           <button
             onClick={shareReadOnlyLink}
