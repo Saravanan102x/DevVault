@@ -8,6 +8,7 @@
     "build": "npm --prefix frontend run build",
     "test:rules": "npm --prefix frontend run test:rules",
     "test:backend": "mvn test -f backend/pom.xml",
+    "login": "npx firebase-tools login",
     "deploy": "npm --prefix frontend run build && npx firebase-tools deploy --only hosting,firestore:rules",
     "deploy:hosting": "npm --prefix frontend run build && npx firebase-tools deploy --only hosting",
     "deploy:rules": "npx firebase-tools deploy --only firestore:rules"
