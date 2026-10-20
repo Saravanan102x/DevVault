@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "oxlint",
     "preview": "vite preview",
-    "test:rules": "npx firebase-tools emulators:exec --config ../firebase.json --only firestore \"node --test test/security-rules.test.mjs\""
+    "test:rules": "npx firebase-tools emulators:exec --project devvault-personal --config ../firebase.json --only firestore 'node --test test/security-rules.test.mjs'"
   },
   "dependencies": {
     "@codemirror/lang-java": "^6.0.2",
