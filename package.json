@@ -1,0 +1,15 @@
+{
+  "name": "devvault",
+  "private": true,
+  "version": "2.0.0",
+  "description": "DevVault - Personal Developer Tech Diary & Interview Vault (Zero-Cost Firebase Spark)",
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "test:rules": "npm --prefix frontend run test:rules",
+    "test:backend": "mvn test -f backend/pom.xml",
+    "deploy": "npm --prefix frontend run build && npx firebase-tools deploy --only hosting,firestore:rules",
+    "deploy:hosting": "npm --prefix frontend run build && npx firebase-tools deploy --only hosting",
+    "deploy:rules": "npx firebase-tools deploy --only firestore:rules"
+  }
+}
