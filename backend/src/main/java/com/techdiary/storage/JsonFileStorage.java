@@ -58,7 +58,8 @@ public class JsonFileStorage {
         if (filename == null || filename.isBlank()) {
             throw new IllegalArgumentException("Data filename cannot be null or blank");
         }
-        Path resolved = dataDir.resolve(filename).normalize();
+        String normalizedFilename = filename.replace('\\', '/');
+        Path resolved = dataDir.resolve(normalizedFilename).normalize();
         if (!resolved.startsWith(dataDir.normalize())) {
             throw new SecurityException("Path traversal attempt detected for file: " + filename);
         }
