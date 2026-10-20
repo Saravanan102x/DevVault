@@ -19,7 +19,7 @@ export const AppLayout: React.FC = () => {
   const [searchOpen, setSearchOpen] = useState(false)
   const [mobileSidebarOpen, setMobileSidebarOpen] = useState(false)
   const location = useLocation()
-  const { isViewer, isFirebaseActive, currentUser, authLoading, isGuestViewer } = useAccess()
+  const { isFirebaseActive, currentUser, authLoading, isGuestViewer } = useAccess()
 
   // Auto-close mobile drawer on route change
   useEffect(() => {
@@ -128,18 +128,6 @@ export const AppLayout: React.FC = () => {
           dueCount={stats?.revisionDueToday ?? 0}
           streakCount={stats?.practiceStreak ?? 1}
         />
-
-        {/* Read-Only Notice Bar for Guests / Shared Links */}
-        {isViewer && (
-          <div className="bg-amber-500/10 dark:bg-amber-500/15 border-b border-amber-500/25 px-3 sm:px-7 py-1.5 text-xs text-amber-700 dark:text-amber-300 font-medium flex items-center justify-between shrink-0">
-            <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse"></span>
-              <span className="truncate">
-                <strong>Read-Only Mode:</strong> Shared by Saravanan K (SDE-2).
-              </span>
-            </span>
-          </div>
-        )}
 
         <main className="flex-1 overflow-y-auto px-3.5 py-4 sm:px-7 sm:py-6 lg:px-8 lg:py-6 pb-20 lg:pb-6 custom-scrollbar">
           <div key={location.pathname + location.search} className="page-transition max-w-6xl mx-auto w-full">

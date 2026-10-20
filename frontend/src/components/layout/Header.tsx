@@ -103,11 +103,11 @@ export const Header: React.FC<HeaderProps> = ({
             to="/"
             className="flex items-center gap-1.5 text-xs text-[#777B8A] dark:text-[#9497A8] hover:text-[#20212A] dark:hover:text-[#F1F2F6] font-medium transition-colors shrink-0"
           >
-            <img src="/favicon.svg" alt="DevVault" className="w-3.5 h-3.5 object-contain" />
-            <span className="hidden sm:inline">DevVault</span>
+            <img src="/favicon.svg" alt="DevVault" className="w-4 h-4 object-contain" />
+            <span className="font-bold text-[#20212A] dark:text-[#F1F2F6]">DevVault</span>
           </Link>
-          <ChevronRight className="w-3 h-3 text-[#B0B4C3] dark:text-[#5E6278] shrink-0" />
-          <span className="text-xs font-semibold text-[#20212A] dark:text-[#F1F2F6] truncate">
+          <ChevronRight className="hidden sm:inline w-3 h-3 text-[#B0B4C3] dark:text-[#5E6278] shrink-0" />
+          <span className="text-xs font-semibold text-[#20212A] dark:text-[#F1F2F6] truncate max-w-[120px] sm:max-w-none hidden xs:inline">
             {title}
           </span>
           {subtitle && (
@@ -118,11 +118,11 @@ export const Header: React.FC<HeaderProps> = ({
         </div>
 
         {/* Header Actions */}
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+        <div className="flex items-center gap-1.5 sm:gap-2 shrink-0">
           {/* Share Read-Only Link Button */}
           <button
             onClick={shareReadOnlyLink}
-            className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#F0EDFF] dark:bg-[#6C5CE7]/20 border border-[#6C5CE7]/35 text-[#6C5CE7] dark:text-[#8C7CFF] text-xs font-bold hover:bg-[#6C5CE7] hover:text-white dark:hover:bg-[#8C7CFF] dark:hover:text-black transition-all cursor-pointer shadow-2xs"
+            className="flex items-center gap-1.5 p-1.5 sm:px-2.5 sm:py-1 rounded-lg bg-[#F0EDFF] dark:bg-[#6C5CE7]/20 border border-[#6C5CE7]/35 text-[#6C5CE7] dark:text-[#8C7CFF] text-xs font-bold hover:bg-[#6C5CE7] hover:text-white dark:hover:bg-[#8C7CFF] dark:hover:text-black transition-all cursor-pointer shadow-2xs"
             title="Copy public Read-Only link to share with others (disables editing & deleting)"
           >
             <Share2 className="w-3.5 h-3.5" />
@@ -133,7 +133,7 @@ export const Header: React.FC<HeaderProps> = ({
           {isAdmin ? (
             <div className="flex items-center gap-1">
               <span
-                className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25"
+                className="flex items-center gap-1 px-2 sm:px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/25"
                 title={currentUser?.email ? `Signed in as ${currentUser.email}` : 'Admin with full edit/delete permissions'}
               >
                 {isFirebaseActive && <Flame className="w-3 h-3 text-amber-500 shrink-0" />}
@@ -153,7 +153,7 @@ export const Header: React.FC<HeaderProps> = ({
               )}
               <button
                 onClick={lockViewerMode}
-                className="p-1 text-[#777B8A] hover:text-indigo-500 rounded text-[11px] transition-colors cursor-pointer"
+                className="hidden sm:inline-flex p-1 text-[#777B8A] hover:text-indigo-500 rounded text-[11px] transition-colors cursor-pointer"
                 title="Preview as Read-Only Viewer"
               >
                 <Eye className="w-3.5 h-3.5" />
@@ -162,15 +162,15 @@ export const Header: React.FC<HeaderProps> = ({
           ) : (
             <div className="flex items-center gap-1.5">
               <span
-                className="flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25"
+                className="hidden sm:inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-mono font-bold bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/25"
                 title="Viewing in Read-Only Mode"
               >
                 <Eye className="w-3.5 h-3.5" />
-                <span className="hidden sm:inline">Read-Only</span>
+                <span>Read-Only</span>
               </span>
               <button
                 onClick={() => setIsUnlockModalOpen(true)}
-                className="flex items-center gap-1 px-2 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-colors cursor-pointer shadow-2xs"
+                className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-colors cursor-pointer shadow-2xs"
                 title="Unlock Admin permissions"
               >
                 <Lock className="w-3 h-3" />
@@ -179,24 +179,24 @@ export const Header: React.FC<HeaderProps> = ({
             </div>
           )}
 
-          {/* Command Palette Trigger */}
+          {/* Command Palette Trigger (Desktop only) */}
           <button
             onClick={onOpenSearch}
-            className="flex items-center gap-2 px-2.5 py-1 rounded-lg bg-[#F8F9FC] dark:bg-[#1A1C28] border border-[#E9EAF0] dark:border-[#2A2C3E] text-xs text-[#777B8A] dark:text-[#9497A8] hover:text-[#20212A] dark:hover:text-[#F1F2F6] hover:border-[#6C5CE7]/40 transition-colors cursor-pointer"
+            className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-lg bg-[#F8F9FC] dark:bg-[#1A1C28] border border-[#E9EAF0] dark:border-[#2A2C3E] text-xs text-[#777B8A] dark:text-[#9497A8] hover:text-[#20212A] dark:hover:text-[#F1F2F6] hover:border-[#6C5CE7]/40 transition-colors cursor-pointer"
             title="Search vault (Ctrl + K)"
           >
             <Search className="w-3 h-3 text-[#777B8A]" />
-            <span className="hidden sm:inline text-[11px]">Search...</span>
+            <span className="hidden md:inline text-[11px]">Search...</span>
             <kbd className="px-1 py-0.2 text-[10px] font-mono bg-white dark:bg-[#232535] border border-[#E9EAF0] dark:border-[#35384D] rounded text-[#777B8A] dark:text-[#9497A8]">
               Ctrl K
             </kbd>
           </button>
 
-          {/* Due Revision Indicator */}
+          {/* Due Revision Indicator (Desktop only) */}
           {dueCount > 0 && (
             <Link
               to="/revision"
-              className="flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F0EDFF] dark:bg-[#6C5CE7]/18 border border-[#DDD6FE] dark:border-[#6C5CE7]/30 text-[#6C5CE7] dark:text-[#8C7CFF] text-xs font-medium hover:opacity-90 transition-opacity"
+              className="hidden md:flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#F0EDFF] dark:bg-[#6C5CE7]/18 border border-[#DDD6FE] dark:border-[#6C5CE7]/30 text-[#6C5CE7] dark:text-[#8C7CFF] text-xs font-medium hover:opacity-90 transition-opacity"
               title={`${dueCount} revision cards due`}
             >
               <BellRing className="w-3 h-3" />

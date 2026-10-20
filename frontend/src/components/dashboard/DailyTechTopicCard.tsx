@@ -111,31 +111,35 @@ export const DailyTechTopicCard: React.FC = () => {
   return (
     <div className="dev-card p-4 sm:p-5 space-y-4 border-[#6C5CE7]/30 dark:border-[#8C7CFF]/30 shadow-md">
       {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-[#E9EAF0] dark:border-[#262838]">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-2xs">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E9EAF0] dark:border-[#262838]">
+        <div className="flex items-start sm:items-center gap-2.5">
+          <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center text-white shadow-2xs shrink-0 mt-0.5 sm:mt-0">
             <BookOpen className="w-4 h-4 stroke-[2.5]" />
           </div>
           <div>
-            <h3 className="text-sm sm:text-base font-bold text-[#20212A] dark:text-[#F1F2F6] flex items-center gap-2">
-              Daily One Tech Topic
-              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-bold uppercase">
+            <div className="flex items-center gap-2 flex-wrap">
+              <h3 className="text-sm sm:text-base font-bold text-[#20212A] dark:text-[#F1F2F6]">
+                Daily One Tech Topic
+              </h3>
+              <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-bold uppercase shrink-0">
                 Personal Log
               </span>
-            </h3>
-            <p className="text-[11px] text-[#777B8A] dark:text-[#9497A8] font-medium">
+            </div>
+            <p className="text-[11px] text-[#777B8A] dark:text-[#9497A8] font-medium mt-0.5">
               Upload what you learned today with date and reference links.
             </p>
           </div>
         </div>
 
-        <span className="text-xs font-mono font-bold text-[#6C5CE7] dark:text-[#8C7CFF] bg-[#F0EDFF] dark:bg-[#1E202E] px-2.5 py-1 rounded-lg border border-[#6C5CE7]/20">
-          {uploadedTopics.length} Logged
-        </span>
+        <div className="flex items-center self-start sm:self-center shrink-0">
+          <span className="text-xs font-mono font-bold text-[#6C5CE7] dark:text-[#8C7CFF] bg-[#F0EDFF] dark:bg-[#1E202E] px-2.5 py-1 rounded-lg border border-[#6C5CE7]/20">
+            {uploadedTopics.length} Logged
+          </span>
+        </div>
       </div>
 
       {/* Upload Form (Admin Only) */}
-      {isAdmin ? (
+      {isAdmin && (
         <form onSubmit={handleUpload} className="space-y-3">
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {/* Date Picker */}
@@ -205,13 +209,6 @@ export const DailyTechTopicCard: React.FC = () => {
             </button>
           </div>
         </form>
-      ) : (
-        <div className="px-3.5 py-2.5 rounded-xl bg-[#F0EDFF]/50 dark:bg-[#1E202E]/60 border border-[#6C5CE7]/20 flex items-center justify-between">
-          <p className="text-xs text-[#5D5F74] dark:text-[#A6A9BC]">
-            Viewing uploaded tech topics in <span className="font-bold text-[#6C5CE7] dark:text-[#8C7CFF]">Read-Only Mode</span>.
-          </p>
-          <span className="text-[11px] font-mono text-[#777B8A]">Admin restricted</span>
-        </div>
       )}
 
       {/* Uploaded Daily Tech Topics List */}

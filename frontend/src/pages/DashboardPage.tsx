@@ -32,8 +32,8 @@ export const DashboardPage: React.FC = () => {
   }, [])
 
   const formattedLiveDate = currentTime.toLocaleDateString('en-US', {
-    weekday: 'long',
-    month: 'long',
+    weekday: 'short',
+    month: 'short',
     day: 'numeric',
     year: 'numeric',
   })
@@ -84,10 +84,10 @@ export const DashboardPage: React.FC = () => {
         {/* Top Meta Bar: Live Clock & Status */}
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-1">
           <div className="flex items-center gap-2 text-xs font-bold text-[#777B8A] dark:text-[#9497A8] flex-wrap">
-            <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-white dark:bg-[#1C1E2D] border border-[#E9EAF0] dark:border-[#2D3044] text-[#20212A] dark:text-[#F1F2F6] font-mono shadow-2xs">
-              <Clock className="w-3.5 h-3.5 text-[#6C5CE7] dark:text-[#8C7CFF]" />
-              <span>{formattedLiveDate}</span>
-              <span className="text-[#6C5CE7] dark:text-[#8C7CFF] font-semibold">• {formattedLiveTime}</span>
+            <span className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1 rounded-full bg-white dark:bg-[#1C1E2D] border border-[#E9EAF0] dark:border-[#2D3044] text-[#20212A] dark:text-[#F1F2F6] font-mono shadow-2xs text-[11px] sm:text-xs">
+              <Clock className="w-3.5 h-3.5 text-[#6C5CE7] dark:text-[#8C7CFF] shrink-0" />
+              <span className="whitespace-nowrap">{formattedLiveDate}</span>
+              <span className="text-[#6C5CE7] dark:text-[#8C7CFF] font-semibold whitespace-nowrap">• {formattedLiveTime}</span>
             </span>
             <span className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/25 text-emerald-600 dark:text-emerald-400 font-bold">
               <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -134,7 +134,7 @@ export const DashboardPage: React.FC = () => {
         {/* Quick Actions & Learning Metrics Strip */}
         <div className="relative z-10 pt-1 flex flex-col md:flex-row md:items-center justify-between gap-4 border-t border-[#E9EAF0]/80 dark:border-[#262838]/80">
           {/* Quick Action Buttons (Admin Only) */}
-          {isAdmin ? (
+          {isAdmin && (
             <div className="flex items-center gap-2 flex-wrap">
               <button
                 onClick={() => navigate('/notes')}
@@ -184,13 +184,6 @@ export const DashboardPage: React.FC = () => {
                 <CalendarCheck className="w-3.5 h-3.5 text-teal-500" />
                 <span>Journal</span>
               </button>
-            </div>
-          ) : (
-            <div className="flex items-center gap-2 text-xs font-semibold text-[#777B8A] dark:text-[#9497A8]">
-              <span className="px-2.5 py-1 rounded-full bg-amber-500/10 text-amber-600 dark:text-amber-400 border border-amber-500/20 font-mono text-[11px] font-bold">
-                👁️ View-Only Shared Mode
-              </span>
-              <span>All technical notes, problem solutions, and interview questions are available to read.</span>
             </div>
           )}
 
